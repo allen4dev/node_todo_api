@@ -9,7 +9,10 @@
   "keywords": [],
   "author": "Alan Aliaga <alanaliagadev@gmail.com> (https://twitter.com/allen4dev)",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2"
+  },
   "devDependencies": {
     "eslint": "^4.8.0",
     "eslint-config-airbnb": "^16.0.0",
