@@ -1,7 +1,10 @@
+require('./config');
+require('./db/index');
+
 const http = require('http');
 const express = require('express');
 
-const PORT = process.env.PORT || 8080;
+const { PORT } = process.env;
 
 const app = express();
 const server = http.createServer(app);
