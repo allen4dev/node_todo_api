@@ -1,11 +1,40 @@
 const request = require('supertest');
 const expect = require('expect');
+const { ObjectID } = require('mongodb');
 
 const { app } = require('./../server');
 const Todo = require('./../models/Todo');
 
+const todos = [
+  {
+    _id: new ObjectID(),
+    text: 'First todo text',
+    completed: false,
+  },
+  {
+    _id: new ObjectID(),
+    text: 'Second todo text',
+    completed: true,
+    completedAt: 123,
+  },
+];
+
 beforeEach(done => {
-  Todo.remove({}).then(() => done());
+  Todo.remove({}).then(() => {
+    Todo.insertMany(todos).then(() => done());
+  });
+});
+
+describe('GET /todos', () => {
+  it('should get all todos', done => {
+    request(app)
+      .get('/todos')
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todos.length).toBe(2);
+      })
+      .end(done);
+  });
 });
 
 describe('POST /todos', () => {
@@ -45,8 +74,8 @@ describe('POST /todos', () => {
         if (err) return done(err);
 
         Todo.find()
-          .then(todos => {
-            expect(todos.length).toBe(0);
+          .then(docs => {
+            expect(docs.length).toBe(2);
             done();
           })
           .catch(done);

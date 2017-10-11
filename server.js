@@ -14,6 +14,14 @@ const server = http.createServer(app);
 
 app.use(bodyParser.json());
 
+app.get('/todos', (req, res) => {
+  Todo.find()
+    .then(todos => {
+      res.status(200).send({ todos });
+    })
+    .catch(() => res.status(400).send());
+});
+
 app.post('/todos', (req, res) => {
   const { text } = req.body;
 
