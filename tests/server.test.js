@@ -114,3 +114,62 @@ describe('GET /todos/:id', () => {
       .end(done);
   });
 });
+
+describe('PATCH /todos/:id', () => {
+  it('should update a todo if correct info is passed', done => {
+    const id = todos[0]._id.toHexString();
+    const text = 'Updated text for todo one';
+
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({
+        text,
+        completed: true,
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe(text);
+        expect(res.body.todo.completed).toBe(true);
+        expect(res.body.todo.completedAt).toBeDefined();
+      })
+      .end((err, res) => {
+        if (err) return done(err);
+
+        Todo.findById(id)
+          .then(todo => {
+            expect(todo.text).toBe(text);
+            expect(res.body.todo.completed).toBe(true);
+            expect(res.body.todo.completedAt).toBeDefined();
+            done();
+          })
+          .catch(done);
+      });
+  });
+
+  it('should clear completedAt if todo is not completed', done => {
+    const id = todos[1]._id.toHexString();
+    const text = 'Updated text for todo 2';
+
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({ text, completed: false })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe(text);
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toBeNull();
+      })
+      .end(err => {
+        if (err) return done(err);
+
+        Todo.findById(id)
+          .then(todo => {
+            expect(todo.text).toBe(text);
+            expect(todo.completed).toBe(false);
+            expect(todo.completedAt).toBeNull();
+            done();
+          })
+          .catch(done);
+      });
+  });
+});
