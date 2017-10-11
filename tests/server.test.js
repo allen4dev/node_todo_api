@@ -82,3 +82,35 @@ describe('POST /todos', () => {
       });
   });
 });
+
+describe('GET /todos/:id', () => {
+  it('should return a todo when a correct id is passed', done => {
+    const id = todos[0]._id.toHexString();
+
+    request(app)
+      .get(`/todos/${id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.body.todo.text).toBe(todos[0].text);
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toBeNull();
+      })
+      .end(done);
+  });
+
+  it('should return 404 if todo not found', done => {
+    const id = new ObjectID().toHexString();
+
+    request(app)
+      .get(`/todos/${id}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 400 for non-object id', done => {
+    request(app)
+      .get('/todos/123')
+      .expect(404)
+      .end(done);
+  });
+});
